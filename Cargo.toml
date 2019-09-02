@@ -1,5 +1,5 @@
 [package]
-name = "sorted"
+name = "sorted_bread_box"
 version = "0.1.0"
 authors = ["CptBread <fredrik.astrom89@gmail.com>"]
 edition = "2018"
