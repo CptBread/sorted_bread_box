@@ -35,6 +35,7 @@ pub trait SortedCollection<K, V> {
 	fn sorted_insert(&mut self, key: K, val: V) -> Option<V>;
 	fn sorted_get_or_add(&mut self, key: K, val: V) -> &V;
 	fn sorted_get(&self, key: K) -> Option<&V>;
+	fn sorted_remove(&mut self, key: K) -> Option<V>;
 }
 
 impl <K: Ord + Clone, V: Clone> SortedCollection<K, V> for Vec<SortedEntry<K, V>> {
@@ -61,6 +62,13 @@ impl <K: Ord + Clone, V: Clone> SortedCollection<K, V> for Vec<SortedEntry<K, V>
 	fn sorted_get(&self, key: K) -> Option<&V> {
 		match self.binary_search_by_key(&key, &get_key) {
 			Ok(idx) => Some(&self[idx].val),
+			_ => None,
+		}
+	}
+
+	fn sorted_remove(&mut self, key: K) -> Option<V> {
+		match self.binary_search_by_key(&key, &get_key) {
+			Ok(idx) => Some(self.remove(idx).val),
 			_ => None,
 		}
 	}
