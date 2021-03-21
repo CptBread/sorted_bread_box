@@ -6,14 +6,14 @@ pub struct SortedEntry<K, V>(pub K, pub V);
 
 // impl <K, V> Default for SortedEntry<K, V> where K: Default, V: Default {
 // 	fn default() -> Self {
-// 		Self{key: Default::default(), val: Default::default()}
+// 		Self(Default::default(), Default::default())
 // 	}
 // }
 
 // Is there a better way to do this? Like a derive that can fail without causing compiler errors?
 impl <K, V> Clone for SortedEntry<K, V> where K: Clone, V: Clone {
 	fn clone(&self) -> Self {
-		Self{key: self.key.clone(), val: self.val.clone()}
+		Self(self.0.clone(), self.1.clone())
 	}
 }
 
@@ -21,9 +21,9 @@ impl <K, V> Copy for SortedEntry<K, V> where K: Copy, V: Copy {}
 
 impl <K, V> Debug for SortedEntry<K, V> where K: Debug, V: Debug {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		f.debug_struct("SortedEntry")
-			.field("key" ,&self.key)
-			.field("val", &self.val)
+		f.debug_tuple("SortedEntry")
+			.field(&self.0)
+			.field(&self.1)
 			.finish()
 	}
 }
