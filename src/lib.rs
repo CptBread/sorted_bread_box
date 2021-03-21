@@ -2,10 +2,7 @@ use std::cmp::Ordering;
 use std::fmt::{Debug, Formatter};
 use std::mem;
 
-pub struct SortedEntry<K, V> {
-	pub key: K,
-	pub val: V,
-}
+pub struct SortedEntry<K, V>(pub K, pub V);
 
 // impl <K, V> Default for SortedEntry<K, V> where K: Default, V: Default {
 // 	fn default() -> Self {
@@ -32,25 +29,25 @@ impl <K, V> Debug for SortedEntry<K, V> where K: Debug, V: Debug {
 }
 
 fn get_key<K: Ord+Clone, V>(entry: &SortedEntry<K, V>) -> K {
-	entry.key.clone()
+	entry.0.clone()
 }
 
 // Maybe remove these impl for ordering as they aren't used...
 impl <K, V> Ord for SortedEntry<K, V> where K: Ord {
 	fn cmp(&self, other: &Self) -> Ordering {
-		self.key.cmp(&other.key)
+		self.0.cmp(&other.0)
 	}
 }
 
 impl <K, V> PartialOrd for SortedEntry<K, V> where K: Ord {
 	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-		Some(self.key.cmp(&other.key))
+		Some(self.0.cmp(&other.0))
 	}
 }
 
 impl <K, V> PartialEq for SortedEntry<K, V> where K: Ord {
     fn eq(&self, other: &Self) -> bool {
-		self.key == other.key
+		self.0 == other.0
 	}
 }
 
@@ -73,9 +70,9 @@ impl <K: Ord + Clone, V: Clone> SortedCollection<K, V> for SortedVecMap<K, V> {
 
 	fn sorted_insert(&mut self, key: K, val: V) -> Option<V> {
 		match self.sorted_searh(&key) {
-			Ok(idx) => Some(mem::replace(&mut self[idx].val, val.clone())),
+			Ok(idx) => Some(mem::replace(&mut self[idx].1, val.clone())),
 			Err(idx) => {
-				self.insert(idx, SortedEntry{key: key.clone(), val: val.clone()});
+				self.insert(idx, SortedEntry(key.clone(), val.clone()));
 				None
 			},
 		}
@@ -83,24 +80,24 @@ impl <K: Ord + Clone, V: Clone> SortedCollection<K, V> for SortedVecMap<K, V> {
 
 	fn sorted_get_or_add(&mut self, key: K, val: V) -> &V {
 		match self.sorted_searh(&key) {
-			Ok(idx) => &self[idx].val,
+			Ok(idx) => &self[idx].1,
 			Err(idx) => {
-				self.insert(idx, SortedEntry{key: key.clone(), val: val.clone()});
-				&self[idx].val
+				self.insert(idx, SortedEntry(key.clone(), val.clone()));
+				&self[idx].1
 			},
 		}
 	}
 
 	fn sorted_get(&self, key: K) -> Option<&V> {
 		match self.sorted_searh(&key) {
-			Ok(idx) => Some(&self[idx].val),
+			Ok(idx) => Some(&self[idx].1),
 			_ => None,
 		}
 	}
 
 	fn sorted_remove(&mut self, key: K) -> Option<V> {
 		match self.sorted_searh(&key) {
-			Ok(idx) => Some(self.remove(idx).val),
+			Ok(idx) => Some(self.remove(idx).1),
 			_ => None,
 		}
 	}
