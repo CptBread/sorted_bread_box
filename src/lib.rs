@@ -7,13 +7,13 @@ pub struct SortedEntry<K, V> {
 	pub val: V,
 }
 
-// Is there a better way to do this? Like a derive that can fail without causing compiler errors?
-impl <K, V> Default for SortedEntry<K, V> where K: Default, V: Default {
-	fn default() -> Self {
-		Self{key: Default::default(), val: Default::default()}
-	}
-}
+// impl <K, V> Default for SortedEntry<K, V> where K: Default, V: Default {
+// 	fn default() -> Self {
+// 		Self{key: Default::default(), val: Default::default()}
+// 	}
+// }
 
+// Is there a better way to do this? Like a derive that can fail without causing compiler errors?
 impl <K, V> Clone for SortedEntry<K, V> where K: Clone, V: Clone {
 	fn clone(&self) -> Self {
 		Self{key: self.key.clone(), val: self.val.clone()}
