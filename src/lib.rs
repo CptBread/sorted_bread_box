@@ -1,9 +1,34 @@
 use std::cmp::Ordering;
+use std::fmt::{Debug, Formatter};
 use std::mem;
 
 pub struct SortedEntry<K, V> {
 	pub key: K,
 	pub val: V,
+}
+
+// Is there a better way to do this? Like a derive that can fail without causing compiler errors?
+impl <K, V> Default for SortedEntry<K, V> where K: Default, V: Default {
+	fn default() -> Self {
+		Self{key: Default::default(), val: Default::default()}
+	}
+}
+
+impl <K, V> Clone for SortedEntry<K, V> where K: Clone, V: Clone {
+	fn clone(&self) -> Self {
+		Self{key: self.key.clone(), val: self.val.clone()}
+	}
+}
+
+impl <K, V> Copy for SortedEntry<K, V> where K: Copy, V: Copy {}
+
+impl <K, V> Debug for SortedEntry<K, V> where K: Debug, V: Debug {
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		f.debug_struct("SortedEntry")
+			.field("key" ,&self.key)
+			.field("val", &self.val)
+			.finish()
+	}
 }
 
 fn get_key<K: Ord+Clone, V>(entry: &SortedEntry<K, V>) -> K {
@@ -41,7 +66,9 @@ pub trait SortedCollection<K, V> {
 	fn sorted_searh(&self, key: &K) -> Self::SearchResult;
 }
 
-impl <K: Ord + Clone, V: Clone> SortedCollection<K, V> for Vec<SortedEntry<K, V>> {
+pub type SortedVecMap<K, V> = Vec<SortedEntry<K, V>>;
+
+impl <K: Ord + Clone, V: Clone> SortedCollection<K, V> for SortedVecMap<K, V> {
 	type SearchResult = Result<usize, usize>;
 
 	fn sorted_insert(&mut self, key: K, val: V) -> Option<V> {
